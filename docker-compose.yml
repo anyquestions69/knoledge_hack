@@ -8,11 +8,13 @@ services:
     env_file:
       - .env.development.local
     restart: always
-    expose:
-      - '3000'
+    ports:
+      - '80:3000'
+    volumes:
+      - ./server:/app
     depends_on:
       - db
-    command: npm run start
+    command: npm run start:dev
   db:
     image: postgres:12-alpine
     environment:

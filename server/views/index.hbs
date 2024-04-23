@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <link rel="stylesheet" href="https://bootstraptema.ru/plugins/2015/bootstrap3/bootstrap.min.css" />
+    <script type="text/javascript" src="https://bootstraptema.ru/plugins/jquery/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://bootstraptema.ru/plugins/2015/b-v3-3-6/bootstrap.min.js"></script>
+
+    <style>
+    textarea.form-control {
+    resize: vertical;
+    overflow-y: hidden;
+    padding: 10px 10px;
+    margin: 10px 10px;
+    border: 10px solid;
+    }
+    </style>
+    </head>
+    <body>
+<div class="container"><div class="row">
+
+<div class="col-lg-6 col-lg-offset-3">
+
+ <form class="form-inline" method="POST" action="/check">
+
+ <span class="form-group">
+ <textarea class="form-control auto-size" placeholder="Введите текст..." rows="1"></textarea>
+ </span>
+ </form>
+
+</div>
+
+</div></div>
+
+ <script>
+ function autoSize(element) {
+
+ $element = $(element);
+
+ element.style.overflowY = 'hidden';
+
+ var paddingTopBottom = $element.innerHeight() - $element.height();
+ 
+ element.style.height = 'auto';
+
+ $element.height(element.scrollHeight - paddingTopBottom);
+ }
+
+ $('.auto-size').each(function() {
+ autoSize(this);
+ }).on('input', function() {
+ autoSize(this);
+ });
+ </script>
+ </body>
+</html>
