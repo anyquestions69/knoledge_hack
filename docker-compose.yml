@@ -13,20 +13,13 @@ services:
     volumes:
       - ./server:/app
     depends_on:
-      - db
+      - rabbitmq
     command: npm run start:dev
-  db:
-    image: postgres:12-alpine
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-      #- ./db_data:/docker-entrypoint-initdb.d
-    expose:
-      - '5432'
-    restart: always
+  machine:
+    build: ./machine
+    depends_on:
+      - rabbitmq
+    command: python3 /machine/receive.py
   rabbitmq:
     image: rabbitmq:3-management
     ports:
