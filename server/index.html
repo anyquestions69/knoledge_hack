@@ -2,15 +2,21 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <title>Socket.io example</title>
-       
+        <title>Знание хакатон</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     </head>
     <body>
-        <input type="text" name="" id="text">
-        <button id="send" >
-            Send 
-        </button>
+        <div class="mb-3">
+            <label for="exampleFormControlTextarea1" class="form-label">Введите текст</label>
+            <textarea class="form-control" id="text" rows="3"></textarea>
+          </div>
+          <div class="col-12">
+            <button type="submit" id="send" class="btn btn-primary"> Отправить текст на анализ </button>
+          </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
         <script>
            
            let socket = new WebSocket("ws://localhost:8000");
