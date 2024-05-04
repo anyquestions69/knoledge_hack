@@ -10,20 +10,35 @@ services:
     restart: always
     ports:
       - '80:3000'
+      - '8000:8000'
     volumes:
       - ./server:/app
     depends_on:
       - rabbitmq
-    command: npm run start:dev
+    networks:
+      - network
+    command: npm run start
+
   machine:
     build: ./machine
     depends_on:
       - rabbitmq
-    command: python3 /machine/receive.py
+    networks:
+      - network
+    volumes:
+      - ./machine:/machine
+    command: python3 /machine/main.py
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - network
+
 volumes:
   postgres:
+
+networks:
+  network: {}
