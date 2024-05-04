@@ -8,6 +8,6 @@
     "ws": "^8.17.0"
   },
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js"
   }
 }

@@ -1,26 +1,33 @@
-#!/usr/bin/env python
-import pika, sys, os
+import json
+import uuid
+import pika
+import time
 
-def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
-    channel = connection.channel()
+print('STARTED WORKER 1')
 
-    channel.queue_declare(queue='pupupu')
+connection = pika.BlockingConnection(
+pika.ConnectionParameters(host='rabbitmq'))
+ 
+channel = connection.channel()
 
-    def callback(ch, method, properties, body):
-        print(f" [x] Received {body}")
+channel.queue_declare(queue='pupupu')
 
-    channel.basic_consume(queue='pupupu', on_message_callback=callback, auto_ack=True)
 
-    print(' [*] Waiting for messages. To exit press CTRL+C')
-    channel.start_consuming()
+def on_request(ch, method, props, body):
+   
+    print(body)
+    response = body
+    ch.basic_publish(exchange='',
+                    routing_key=props.reply_to,
+                    properties=pika.BasicProperties(correlation_id = \
+                                                        props.correlation_id),
+                    body=json.dumps(response))
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 
-if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
+consumer_tag = uuid.uuid1().hex
+channel.basic_qos(prefetch_count=1)
+
+channel.basic_consume(queue='pupupu',consumer_tag=consumer_tag, on_message_callback=on_request)
+
+print(" [x] Awaiting RPC requests", consumer_tag)
+channel.start_consuming()
