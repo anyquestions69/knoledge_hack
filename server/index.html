@@ -12,9 +12,10 @@
         </button>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
         <script>
-            let socket = new WebSocket("ws://localhost:8000");
-            
+           
+           let socket = new WebSocket("ws://localhost:8000");
             $('#send').on('click',function(){
+                
                 console.log('clicked')
                 socket.send(JSON.stringify({text:$('#text').val()}))
             })

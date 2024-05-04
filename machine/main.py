@@ -15,8 +15,8 @@ channel.queue_declare(queue='pupupu')
 
 def on_request(ch, method, props, body):
    
-    print(body)
-    response = body
+    text = body.decode('utf-8')
+    response = text
     ch.basic_publish(exchange='',
                     routing_key=props.reply_to,
                     properties=pika.BasicProperties(correlation_id = \

@@ -27,6 +27,7 @@ services:
       - network
     volumes:
       - ./machine:/machine
+    restart: always
     command: python3 /machine/main.py
 
   rabbitmq:

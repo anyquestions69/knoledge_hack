@@ -29,7 +29,7 @@ function wsConn(ws){
         try {
             if(channel){
                 var text = JSON.parse(res)
-                channel.prefetch(1, false);
+                //channel.prefetch(1, false);
                 channel.assertQueue('', {
                     exclusive: true,
                     autoDelete:true
@@ -45,8 +45,6 @@ function wsConn(ws){
                             console.log('Ответ парсера: %s', msg.content.toString());
                             ws.send( msg.content.toString())
                         }
-                        channel.cancel(ct);
-                        ws.close()
                     }, {
                         consumerTag:ct, 
                         noAck: true
