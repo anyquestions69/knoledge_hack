@@ -1,1 +1,3 @@
 pika
+pymorphy2
+tensorflow
