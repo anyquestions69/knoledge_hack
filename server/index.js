@@ -50,7 +50,7 @@ function wsConn(ws){
                         noAck: true
                     });
                     channel.sendToQueue('pupupu',
-                        Buffer.from(text.text), {
+                        Buffer.from(res), {
                             correlationId: correlationId,
                             replyTo: q.queue
                         });

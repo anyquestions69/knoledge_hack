@@ -2,6 +2,7 @@ import json
 import uuid
 import pika
 import time
+import Tyrenko
 
 print('STARTED WORKER 1')
 
@@ -15,8 +16,8 @@ channel.queue_declare(queue='pupupu')
 
 def on_request(ch, method, props, body):
    
-    text = body.decode('utf-8')
-    response = text
+    text = json.loads(body.decode('utf-8'))
+    response = Tyrenko.determined_text_to_title(text.title, text.text)
     ch.basic_publish(exchange='',
                     routing_key=props.reply_to,
                     properties=pika.BasicProperties(correlation_id = \

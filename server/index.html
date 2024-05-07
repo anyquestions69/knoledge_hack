@@ -8,8 +8,8 @@
     </head>
     <body>
         <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">Введите текст</label>
-            <textarea class="form-control" id="text" rows="3"></textarea>
+            <input type="text" name="" placeholder="Название" id="title">
+            <textarea class="form-control" id="text" placeholder="Введите текст" rows="3"></textarea>
           </div>
           <div class="col-12">
             <button type="submit" id="send" class="btn btn-primary"> Отправить текст на анализ </button>
@@ -22,8 +22,8 @@
            let socket = new WebSocket("ws://localhost:8000");
             $('#send').on('click',function(){
                 
-                console.log('clicked')
-                socket.send(JSON.stringify({text:$('#text').val()}))
+                console.log(JSON.stringify({text:$('#text').val(), title:$('#title').val()}))
+                socket.send(JSON.stringify({text:$('#text').val(), title:$('#title').val()}))
             })
             socket.addEventListener("message", (event) => {
                 console.log(event)
