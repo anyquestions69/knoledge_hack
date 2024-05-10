@@ -1,7 +1,7 @@
 FROM python:3.9-slim
 
 WORKDIR /machine 
-RUN apt update && apt install -y libhdf5-dev
+RUN apt update && apt install -y build-essential libffi-dev python-dev libhdf5-dev 
 
 RUN python -m pip install --upgrade pip
 
