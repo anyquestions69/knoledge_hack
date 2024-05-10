@@ -11,8 +11,6 @@ services:
     ports:
       - '80:3000'
       - '8000:8000'
-    volumes:
-      - ./server:/app
     depends_on:
       - rabbitmq
     networks:
@@ -25,8 +23,6 @@ services:
       - rabbitmq
     networks:
       - network
-    volumes:
-      - ./machine:/machine
     restart: always
     command: python3 /machine/main.py
 
