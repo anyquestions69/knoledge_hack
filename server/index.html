@@ -10,6 +10,7 @@
         <div class="container">
         <p class="h1 mx-auto my-4">AI-Driven Analysis and Enhancement</p>
         <div class="mb-3">
+            <div class="p my-4" id="result"></div>
             <input type="text" class="mb-3 form-control" name="" placeholder="Название" id="title">
             <textarea class="form-control" id="text" placeholder="Введите текст" rows="3"></textarea>
           </div>
@@ -29,7 +30,14 @@
                 socket.send(JSON.stringify({text:$('#text').val(), title:$('#title').val()}))
             })
             socket.addEventListener("message", (event) => {
-                console.log(event)
+                console.log(JSON.parse(event.data))
+                $('#result').text(JSON.parse(event.data.msg))
+                if(JSON.parse(event.data.code==1)){
+                    $('#result').css('color','green')
+                }else{
+                    $('#result').css('color','red')
+                }
+                
             });
         
         </script>

@@ -25,6 +25,7 @@ amqp.connect('amqp://rabbitmq:5672', function(error0, conn) {
 wsServer.on('connection',wsConn)
 
 function wsConn(ws){
+    console.log('Connection')
     ws.on('message',(res)=>{
         try {
             if(channel){
@@ -54,6 +55,7 @@ function wsConn(ws){
                             correlationId: correlationId,
                             replyTo: q.queue
                         });
+                        
                 });
             }else{
                 ws.emit('err', 'error')
