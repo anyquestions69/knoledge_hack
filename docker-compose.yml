@@ -12,7 +12,8 @@ services:
       - '80:3000'
       - '8000:8000'
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     networks:
       - network
     command: npm run start
@@ -20,7 +21,9 @@ services:
   machine:
     build: ./machine
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+
     volumes:
       - ./machine:/machine
     networks:
@@ -33,6 +36,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 5s
+      timeout: 5s
+      retries: 30
     networks:
       - network
 
