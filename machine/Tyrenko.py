@@ -45,7 +45,7 @@ def get_links(text):
 
 def determined_text_to_title(title, text):
 
-    model = tf.keras.models.load_model('best_hack_model.h5')
+    model = tf.keras.models.load_model('/machine/best_hack_model.h5')
 
     with open('tokenizer_hack_dict.json', 'r') as f:
         word_index = json.load(f)

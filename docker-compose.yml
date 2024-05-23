@@ -21,6 +21,8 @@ services:
     build: ./machine
     depends_on:
       - rabbitmq
+    volumes:
+      - ./machine:/machine
     networks:
       - network
     restart: always
