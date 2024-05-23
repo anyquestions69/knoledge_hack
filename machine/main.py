@@ -2,12 +2,12 @@ import json
 import uuid
 import pika
 import time
-#import Tyrenko
+import Tyrenko
 
 print('STARTED WORKER 1')
 
 connection = pika.BlockingConnection(
-pika.ConnectionParameters(host='localhost'))
+pika.ConnectionParameters(host='rabbitmq'))
  
 channel = connection.channel()
 
@@ -18,7 +18,8 @@ def on_request(ch, method, props, body):
    
     text = json.loads(body.decode('utf-8'))
     print(text)
-    response = {'code':0, 'msg': 'Статья не полностью раскрывает суть темы!'}#Tyrenko.determined_text_to_title(text.title, text.text)
+    response = Tyrenko.determined_text_to_title(text.title, text.text)
+    print(response)
     ch.basic_publish(exchange='',
                     routing_key=props.reply_to,
                     properties=pika.BasicProperties(correlation_id = \
