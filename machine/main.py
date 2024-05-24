@@ -19,12 +19,12 @@ def on_request(ch, method, props, body):
     text = json.loads(body.decode('utf-8'))
     print(text)
     response = Tyrenko.determined_text_to_title(text['title'], text['text'])
-    print(response)
+    
     ch.basic_publish(exchange='',
                     routing_key=props.reply_to,
                     properties=pika.BasicProperties(correlation_id = \
                                                         props.correlation_id),
-                    body=json.dumps(response))
+                    body=response.encode('utf-8'))
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 consumer_tag = uuid.uuid1().hex

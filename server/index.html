@@ -30,13 +30,9 @@
                 socket.send(JSON.stringify({text:$('#text').val(), title:$('#title').val()}))
             })
             socket.addEventListener("message", (event) => {
-                console.log(JSON.parse(event.data))
-                $('#result').text(JSON.parse(event.data.msg))
-                if(JSON.parse(event.data.code==1)){
-                    $('#result').css('color','green')
-                }else{
-                    $('#result').css('color','red')
-                }
+                console.log(event.data)
+                $('#result').text(event.data)
+                
                 
             });
         

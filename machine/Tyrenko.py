@@ -1,24 +1,28 @@
+def pymorphy2_311_hotfix():
+    from inspect import getfullargspec
+    from pymorphy2.units.base import BaseAnalyzerUnit
+
+    def _get_param_names_311(klass):
+        if klass.__init__ is object.__init__:
+            return []
+        args = getfullargspec(klass.__init__).args
+        return sorted(args[1:])
+
+    setattr(BaseAnalyzerUnit, '_get_param_names', _get_param_names_311)
+
+
+
+
+import numpy as np
 import tensorflow as tf
-import json
 import pymorphy2
 import re
-
-
-
-from inspect import getfullargspec
-from pymorphy2.units.base import BaseAnalyzerUnit
-
-def _get_param_names_311(klass):
-    if klass.__init__ is object.__init__:
-        return []
-    args = getfullargspec(klass.__init__).args
-    return sorted(args[1:])
-setattr(BaseAnalyzerUnit, '_get_param_names', _get_param_names_311)
-
+import json
 
 
 def formate_text(text, with_mophy = True):
     PATTERN = r'[^а-яА-Я \d\-]'
+    pymorphy2_311_hotfix()
     morph = pymorphy2.MorphAnalyzer()
     
     text = text.replace(',', ' ').replace('_', ' ').replace('\n', ' ').lower()
@@ -43,29 +47,51 @@ def get_links(text):
             links.append(lk)
     return links
 
-def determined_text_to_title(title, text):
+def get_ratio_links(links, text):
+    try:
+        count_links = len(links)
+        count_words = len(text.split())
+        return count_links / count_words
+    
+    except Exception as e:
+        print(e)
+        return 0.0
 
-    model = tf.keras.models.load_model('/machine/best_hack_model.h5')
+def determined_text_to_title(title, text):
+    
+    if title.strip("\t\n ") == '' or text.strip("\t\n ") == '':
+        return 'Error: Оба поля должны быть заполненый!'
+
+    model = tf.keras.models.load_model('model.h5')
 
     with open('tokenizer_hack_dict.json', 'r') as f:
         word_index = json.load(f)
     tokenizer = tf.keras.preprocessing.text.Tokenizer(num_words=10000, oov_token="<OOV>")
     tokenizer.word_index = word_index
 
-    # links = get_links(text) # НЕ УДАЛЯТЬ!
+    title = formate_text(title)
+    links = get_links(text)
+    text = formate_text(text)
+    ratio_links = get_ratio_links(links, text)
 
-    title = tokenizer.texts_to_sequences(formate_text(title))
-    text = tokenizer.texts_to_sequences(formate_text(text))
+    title = tokenizer.texts_to_sequences([title])
+    text = tokenizer.texts_to_sequences([text])
 
     titles_pad = tf.keras.preprocessing.sequence.pad_sequences(title, maxlen=20)
     articles_pad = tf.keras.preprocessing.sequence.pad_sequences(text, maxlen=1000)
 
     predition = model([titles_pad, articles_pad])
     pred_class= int(tf.round(predition)[0][0].numpy())
+    ratio_links = 0.067
 
     label_dict = {
-        0: 'Статья не полностью раскрывает суть темы!',
-        1: 'Статья полностью раскрывает суть темы!'
+        0: 'Статья не полностью раскрывает суть темы или нет её определения!',
+        1: 'Статья полностью раскрывает суть темы и присутствует её определение!'
     }
+
+    if ratio_links > 0.05:
+        result = "что превышает норму"
+    else:
+        result = " что яляется допустимым"
     
-    return label_dict[pred_class]
+    return label_dict[pred_class] + f' уровень бесполезной информации: {ratio_links * 100}%, {result}!'
