@@ -1,7 +1,9 @@
 const { WebSocketServer } = require('ws');
 const http = require('http');
 const express= require('express')
+const cors = require('cors');
 const app = express()
+app.use(cors())
 const server = http.createServer();
 const wsServer = new WebSocketServer({ server });
 const port = 8000;
