@@ -1,7 +1,7 @@
 version: '1.0'
 
 services:
-  app:
+  server:
     build:
       context: ./server
     working_dir: /app
@@ -9,44 +9,38 @@ services:
       - .env.development.local
     restart: always
     ports:
-      - '80:4000'
+      - '4000:4000'
       - '8000:8000'
     depends_on:
       rabbitmq:
         condition: service_healthy
-    networks:
-      - network
     command: npm run start
-  client:  
-    build:
-      context: ./client
-    ports:
-      - 3000:3000
-    depends_on:
-      - app
+
+
   machine:
     build: ./machine
     depends_on:
       rabbitmq:
         condition: service_healthy
-
     volumes:
       - ./machine:/machine
-    networks:
-      - network
     restart: always
     command: python3 /machine/main.py
-  # nginx:
-  #  container_name: proxy_nginx
-  #  depends_on:
-    #   - app
-    # image: nginx:latest
-    # ports:
-    #   - '80:80'
-    # volumes:
-    #   - ./nginx:/etc/nginx/conf.d
-    #   - ./client:/var/www/static
-    # restart: always
+
+
+  nginx:
+    container_name: proxy_nginx
+    depends_on:
+        - server
+    image: nginx:latest
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./client:/var/www/static
+    restart: always
+
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
@@ -57,10 +51,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
-    
 
 volumes:
   postgres:
-
-networks:
-  network: {}

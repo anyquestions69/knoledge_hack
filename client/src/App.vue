@@ -19,20 +19,21 @@ import { ref } from 'vue';
 
 const title = ref('');
 const text = ref('');
-
+let socket = new WebSocket("ws://localhost:8000");
 const sendMessage = () => {
   const message = JSON.stringify({ text: text.value, title: title.value });
   console.log(message);
+  socket.send(JSON.stringify({ text: document.getElementById('text').value, title: document.querySelector('.name').value }));
 };
 
-let socket = new WebSocket("ws://localhost:8000");
+
 
 socket.addEventListener("message", (event) => {
   console.log(event.data);
   
   document.getElementById('result').textContent = event.data;
 });
-
+ 
 
 defineExpose({
   title,
@@ -49,7 +50,10 @@ defineExpose({
   padding: 0;
   box-sizing: border-box;
 }
-
+body{
+  margin:0;
+  padding:0;
+}
 .container {
   margin-top: auto;
   background: #fcfcfc;

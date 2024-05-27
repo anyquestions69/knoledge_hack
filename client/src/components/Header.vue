@@ -1,8 +1,8 @@
 <template>
     <div class="header">
-        <img class="logo" src="C:\Users\ilya\Desktop\projects\FS_course\clien\src\assets\icons\icon.png" alt="Logo" />
+        <img class="logo" src="/assets/icons/icon.png" alt="Logo" />
         <span class="title">Анализ полноты содержания статей на основе искусственного интеллекта</span>
-        <img class="star" src="C:\Users\ilya\Desktop\projects\FS_course\clien\src\assets\icons\star.png" alt="Logo" />
+        <img class="star" src="/assets/icons/star.png" alt="Logo" />
     </div>
 </template>
 <script>
