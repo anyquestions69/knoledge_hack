@@ -82,10 +82,6 @@ def determined_text_to_title(title, text):
 
     predition = model([titles_pad, articles_pad])
     pred_class= int(tf.round(predition)[0][0].numpy())
-<<<<<<< HEAD
-
-=======
->>>>>>> 58bdcac41e19be4fc1a37d8422b1f5b8b3225444
 
     label_dict = {
         0: 'Статья не полностью раскрывает суть темы или нет её определения!',
