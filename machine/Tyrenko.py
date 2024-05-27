@@ -62,7 +62,7 @@ def determined_text_to_title(title, text):
     if title.strip("\t\n ") == '' or text.strip("\t\n ") == '':
         return 'Error: Оба поля должны быть заполненый!'
 
-    model = tf.keras.models.load_model('best_hack_model.h5')
+    model = tf.keras.models.load_model('model.h5')
 
     with open('tokenizer_hack_dict.json', 'r') as f:
         word_index = json.load(f)
@@ -82,7 +82,6 @@ def determined_text_to_title(title, text):
 
     predition = model([titles_pad, articles_pad])
     pred_class= int(tf.round(predition)[0][0].numpy())
-    ratio_links = 0.067
 
     label_dict = {
         0: 'Статья не полностью раскрывает суть темы или нет её определения!',
