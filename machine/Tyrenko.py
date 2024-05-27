@@ -82,7 +82,7 @@ def determined_text_to_title(title, text):
 
     predition = model([titles_pad, articles_pad])
     pred_class= int(tf.round(predition)[0][0].numpy())
-    ratio_links = 0.067
+
 
     label_dict = {
         0: 'Статья не полностью раскрывает суть темы или нет её определения!',
