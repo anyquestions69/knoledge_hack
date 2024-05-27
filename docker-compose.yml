@@ -25,8 +25,6 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy 
-    env_file:
-      - .env
   machine:
     build: ./machine
     depends_on:
@@ -47,8 +45,6 @@ services:
     image: nginx:latest
     ports:
       - '80:80'
-    env_file:
-      - .env
     volumes:
       - ./nginx:/etc/nginx/conf.d
       - ./client:/var/www/static
