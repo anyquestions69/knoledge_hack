@@ -9,7 +9,7 @@ services:
       - .env.development.local
     restart: always
     ports:
-      - '80:3000'
+      - '4000:4000'
       - '8000:8000'
     depends_on:
       rabbitmq:
@@ -17,7 +17,16 @@ services:
     networks:
       - network
     command: npm run start
-
+  client:  
+    build:
+      context: ./client
+    ports:
+      - 3000:3000
+    depends_on:
+      rabbitmq:
+        condition: service_healthy 
+    env_file:
+      - .env
   machine:
     build: ./machine
     depends_on:
@@ -30,7 +39,20 @@ services:
       - network
     restart: always
     command: python3 /machine/main.py
-
+  nginx:
+    container_name: proxy_nginx
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    image: nginx:latest
+    ports:
+      - '80:80'
+    env_file:
+      - .env
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./client:/var/www/static
+    restart: always
   rabbitmq:
     image: rabbitmq:3-management
     ports:
