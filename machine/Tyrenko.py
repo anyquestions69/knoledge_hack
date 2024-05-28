@@ -1,15 +1,13 @@
-def pymorphy2_311_hotfix():
-    from inspect import getfullargspec
-    from pymorphy2.units.base import BaseAnalyzerUnit
+from inspect import getfullargspec
+from pymorphy2.units.base import BaseAnalyzerUnit
 
-    def _get_param_names_311(klass):
-        if klass.__init__ is object.__init__:
-            return []
-        args = getfullargspec(klass.__init__).args
-        return sorted(args[1:])
+def _get_param_names_311(klass):
+    if klass.__init__ is object.__init__:
+        return []
+    args = getfullargspec(klass.__init__).args
+    return sorted(args[1:])
 
-    setattr(BaseAnalyzerUnit, '_get_param_names', _get_param_names_311)
-
+setattr(BaseAnalyzerUnit, '_get_param_names', _get_param_names_311)
 
 
 
@@ -22,7 +20,6 @@ import json
 
 def formate_text(text, with_mophy = True):
     PATTERN = r'[^а-яА-Я \d\-]'
-    pymorphy2_311_hotfix()
     morph = pymorphy2.MorphAnalyzer()
     
     text = text.replace(',', ' ').replace('_', ' ').replace('\n', ' ').lower()
@@ -34,7 +31,7 @@ def formate_text(text, with_mophy = True):
         return string.strip("\t\n ")
     return text.strip("\t\n ")
 
-def get_links(text):
+def get_links_and_lenEmptyChars(text):
     REGEX = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
     links = []
     find_links = re.findall(REGEX, text)
@@ -45,13 +42,19 @@ def get_links(text):
                     links.append(item)
         elif isinstance(lk, str) and len(lk) > 0:
             links.append(lk)
-    return links
+    
+    cleaned_text = re.sub(REGEX, '', text)
+    regex = r"[^a-zA-Zа-яА-Я\s\w\.:\!\?\s]"
+    ratio_empty_chars = len(re.sub(regex, "", cleaned_text))
 
-def get_ratio_links(links, text):
+
+    return (links, ratio_empty_chars)
+
+def get_ratio(links, text, len_empty = 0):
     try:
         count_links = len(links)
         count_words = len(text.split())
-        return count_links / count_words
+        return count_links + ( len_empty // 100 ) / count_words
     
     except Exception as e:
         print(e)
@@ -70,15 +73,15 @@ def determined_text_to_title(title, text):
     tokenizer.word_index = word_index
 
     title = formate_text(title)
-    links = get_links(text)
+    links, part_empty_chars = get_links_and_lenEmptyChars(text)
     text = formate_text(text)
-    ratio_links = get_ratio_links(links, text)
+    ratio_links = get_ratio(links, text, part_empty_chars)
 
     title = tokenizer.texts_to_sequences([title])
     text = tokenizer.texts_to_sequences([text])
 
-    titles_pad = tf.keras.preprocessing.sequence.pad_sequences(title, maxlen=20)
-    articles_pad = tf.keras.preprocessing.sequence.pad_sequences(text, maxlen=1000)
+    titles_pad = tf.keras.preprocessing.sequence.pad_sequences(title, maxlen=15)
+    articles_pad = tf.keras.preprocessing.sequence.pad_sequences(text, maxlen=1500)
 
     predition = model([titles_pad, articles_pad])
     pred_class= int(tf.round(predition)[0][0].numpy())
@@ -88,9 +91,11 @@ def determined_text_to_title(title, text):
         1: 'Статья полностью раскрывает суть темы и присутствует её определение!'
     }
 
-    if ratio_links > 0.05:
+    if ratio_links > 0.2:
         result = "что превышает норму"
     else:
-        result = " что яляется допустимым"
+        result = "что яляется допустимым"
+
+    res_ratio_links = ratio_links * 100 if ratio_links * 100 < 100 else ratio_links * 10
     
-    return label_dict[pred_class] + f' уровень бесполезной информации: {ratio_links * 100}%, {result}!'
+    return label_dict[pred_class] + f' Уровень бесполезной информации: {res_ratio_links:.3f}%, {result}!'
